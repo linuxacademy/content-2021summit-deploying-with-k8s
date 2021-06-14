@@ -35,21 +35,9 @@ kubectl apply -f my-pod.yml
 kubectl get pods
 ```
 
-What if we want to make a change to the Pod? Let's try to deploy a new version of the code.
+What if we want to create multiple replicas of the Pod?
 
-```
-vi my-pod.yml
-```
-
-Change the `image:` to `nginx:1.19.10`.
-
-```
-kubectl apply -f my-pod.yml
-```
-
-It won't let us change the Pod. In k8s, you're supposed to replace old Pods with new Pods rather than making lots of edits to existing Pods.
-
-So let's try a Deployment instead.
+Let's try a Deployment instead.
 
 ```
 vi my-deployment.yml
@@ -61,7 +49,7 @@ kind: Deployment
 metadata:
   name: my-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: my-deployment
@@ -97,6 +85,7 @@ kind: Service
 metadata:
   name: my-service
 spec:
+  type: NodePort
   selector:
     app: my-deployment
   ports:
@@ -211,18 +200,19 @@ spec:
 
 ---
 
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: bluegreen-svc
-  spec:
-    selector:
-      app: bluegreen-test
-    ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30081
+apiVersion: v1
+kind: Service
+metadata:
+  name: bluegreen-svc
+spec:
+  type: NodePort
+  selector:
+    app: bluegreen-test
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30081
 ```
 
 There's a lot you can do with Deployments in Kubernetes, but this should give you an idea of the basics!

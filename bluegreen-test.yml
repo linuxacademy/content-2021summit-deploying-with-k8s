@@ -49,6 +49,7 @@ spec:
   metadata:
     name: bluegreen-svc
   spec:
+    type: NodePort
     selector:
       app: bluegreen-test
     ports:
