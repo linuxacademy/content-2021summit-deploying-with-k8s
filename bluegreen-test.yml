@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      split: blue
+  template:
+    metadata:
+      labels:
+        split: blue
+        app: bluegreen-test
+    spec:
+      containers:
+      - name: app
+        image: linuxacademycontent/summit-k8s:blue
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      split: green
+  template:
+    metadata:
+      labels:
+        split: green
+        app: bluegreen-test
+    spec:
+      containers:
+      - name: app
+        image: linuxacademycontent/summit-k8s:green
+        ports:
+        - containerPort: 80
+
+---
+
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: bluegreen-svc
+  spec:
+    selector:
+      app: bluegreen-test
+    ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30081
